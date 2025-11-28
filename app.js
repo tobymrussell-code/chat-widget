@@ -1,3 +1,7 @@
+window.addEventListener('DOMContentLoaded', () => {
+  alert('Your finance app is running!');
+});
+
 (function () {
   const storageKey = 'llc-rental-ledger-v1';
   const today = new Date().toISOString().slice(0, 10);
