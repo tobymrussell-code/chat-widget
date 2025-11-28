@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LLC & Rental Cash Flow Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <p class="eyebrow">Finance Console</p>
+      <h1>Track your LLCs and rental properties</h1>
+      <p class="lede">Upload receipts or statements, route them to the right company or personal bucket, and see cash flow by company or property.</p>
+    </div>
+    <div class="header-actions">
+      <button id="add-property-btn" class="secondary">Add rental property</button>
+      <button id="add-company-btn" class="secondary">Add LLC</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel stretch">
+      <div class="panel-header">
+        <div>
+          <p class="eyebrow">Snapshot</p>
+          <h2>Cash flow overview</h2>
+        </div>
+        <div class="filters">
+          <label>
+            Company
+            <select id="company-filter"></select>
+          </label>
+          <label>
+            Property
+            <select id="property-filter"></select>
+          </label>
+          <label>
+            Month
+            <input type="month" id="month-filter" />
+          </label>
+        </div>
+      </div>
+
+      <div class="cards" id="summary-cards"></div>
+      <div class="cards" id="property-cards"></div>
+    </section>
+
+    <section class="panel stretch">
+      <div class="panel-header">
+        <div>
+          <p class="eyebrow">Insights</p>
+          <h2>Where your money is going</h2>
+          <p class="muted">See category trends, personal vs. LLC spend, and tax-saving nudges.</p>
+        </div>
+      </div>
+
+      <div class="insight-grid">
+        <article class="card glow" id="tax-card"></article>
+        <article class="card glow" id="burn-card"></article>
+        <article class="card glow" id="overspend-card"></article>
+      </div>
+
+      <div class="insight-flex">
+        <div class="card inset breakdown">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Breakdown</p>
+              <h3>Expense categories</h3>
+              <p class="muted">Bars show which buckets consume the most cash.</p>
+            </div>
+          </div>
+          <div id="breakdown-list" class="breakdown-list"></div>
+        </div>
+
+        <div class="card inset notifications">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Notifications</p>
+              <h3>Nudges & alerts</h3>
+              <p class="muted">Stay ahead of taxes and spot wasteful spend.</p>
+            </div>
+          </div>
+          <ul id="nudge-list" class="nudge-list"></ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel form-panel">
+      <div class="panel-header">
+        <div>
+          <p class="eyebrow">Attachments</p>
+          <h2>Bulk uploads & receipt intake</h2>
+          <p class="muted">Upload statements or snap a receipt, then categorize each item to an LLC, personal, or ignore it.</p>
+        </div>
+      </div>
+
+      <div class="grid two-col">
+        <form id="ingest-form" class="stack card inset">
+          <div>
+            <p class="eyebrow">Bulk import</p>
+            <h3>Upload or capture</h3>
+            <p class="muted">Attach CSV, PDF, or snap a receipt photo. Each upload will be queued for categorization.</p>
+          </div>
+          <label>
+            File
+            <input type="file" id="ingest-file" accept=".csv,.pdf,image/*" capture="environment" required />
+          </label>
+          <label>
+            Date on receipt/statement
+            <input type="date" id="ingest-date" required />
+          </label>
+          <label>
+            Amount on receipt (optional)
+            <input type="number" id="ingest-amount" min="0" step="0.01" placeholder="0.00" />
+          </label>
+          <label>
+            Category hint
+            <input type="text" id="ingest-category" placeholder="Supplies, travel, utilities" />
+          </label>
+          <label>
+            Notes
+            <input type="text" id="ingest-notes" placeholder="Optional details" />
+          </label>
+          <div class="actions">
+            <button type="submit">Add to categorization queue</button>
+          </div>
+        </form>
+
+        <div class="stack card inset">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Categorize</p>
+              <h3>Assign uploads</h3>
+              <p class="muted">Route each document to American Home Buyers, America Home Builders S-Corp, personal, or ignore.</p>
+            </div>
+          </div>
+          <div id="categorization-list" class="attachment-list" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <div class="card inset">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">History</p>
+            <h3>Processed uploads</h3>
+            <p class="muted">See where each receipt or statement was filed.</p>
+          </div>
+        </div>
+        <div id="document-history" class="attachment-list" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="panel form-panel export-panel">
+      <div class="panel-header">
+        <div>
+          <p class="eyebrow">Exports</p>
+          <h2>Year-end CSV delivery</h2>
+          <p class="muted">Quickly package your transactions for a tax professional or draft an email from your default mail app.</p>
+        </div>
+      </div>
+
+      <div class="grid two-col">
+        <div class="stack card inset">
+          <div>
+            <p class="eyebrow">Export options</p>
+            <h3>Choose a tax year</h3>
+            <p class="muted">Pick the year to include and download a clean CSV for every LLC, property, and personal expense.</p>
+          </div>
+          <label>
+            Tax year
+            <input type="number" id="export-year" min="2000" max="2099" step="1" />
+          </label>
+          <div class="export-actions">
+            <button id="export-download" type="button">Download CSV</button>
+            <button id="export-email" type="button" class="secondary">Email via mail app</button>
+          </div>
+          <div id="export-status" class="muted"></div>
+        </div>
+
+        <div class="card inset export-guide">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">What’s inside</p>
+              <h3>Easy-to-read ledger</h3>
+              <p class="muted">Each CSV row includes date, type, company, property, category, notes, and amount—ready for bookkeeping.</p>
+            </div>
+          </div>
+          <ul class="export-list">
+            <li>📅 Filters by the year you pick.</li>
+            <li>🏷️ Labels LLC vs. personal spending for faster tax prep.</li>
+            <li>📧 Opens your local mail client with a pre-filled draft to share the export.</li>
+            <li>🔒 Files stay in your browser—no uploads required.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <p class="eyebrow">Ledger</p>
+          <h2>Recent activity</h2>
+        </div>
+      </div>
+      <table class="ledger" id="transaction-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Company</th>
+            <th>Property</th>
+            <th>Category</th>
+            <th>Notes</th>
+            <th class="numeric">Amount</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+
+  <dialog id="entity-dialog">
+    <form method="dialog" id="entity-form" class="stack">
+      <h3 id="entity-title"></h3>
+      <label>
+        Name
+        <input type="text" id="entity-name" required />
+      </label>
+      <label>
+        Notes
+        <input type="text" id="entity-notes" placeholder="Optional details" />
+      </label>
+      <div class="dialog-actions">
+        <button value="cancel" class="secondary">Cancel</button>
+        <button type="submit">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+  <script src="chat-loader.js"></script>
+</body>
+</html>
